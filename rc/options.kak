@@ -15,7 +15,7 @@ declare-option -hidden bool mkdr_daemon_alive     false
 declare-option -hidden str  mkdr_last_config_hash ''
 
 # 設定オプション（buffer スコープ、21個）
-declare-option -hidden int  mkdr_cursor_context  0
+declare-option -hidden int  mkdr_cursor_context  1
 declare-option -hidden str  mkdr_heading_char_1  '▌'
 declare-option -hidden str  mkdr_heading_char_2  '▌'
 declare-option -hidden str  mkdr_heading_char_3  '▌'

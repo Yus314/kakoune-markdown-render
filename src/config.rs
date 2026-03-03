@@ -52,7 +52,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Config {
-            cursor_context:  0,
+            cursor_context:  1,
             heading_char:    ['▌'; 6],
             heading_setext:  false,
             thematic_char:   '─',

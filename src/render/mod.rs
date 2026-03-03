@@ -314,7 +314,7 @@ print(\"hello\")
 
 /// emit 直前にカーソル近傍を除外する。
 /// context=0 の場合は Cow::Borrowed でゼロコピー返却。
-/// context>0 の場合は Cow::Owned でフィルタ済み新 Vec を返す。
+/// context>0 の場合: 1=カーソル行のみ, 2=±1行, N=±(N-1)行。
 pub fn filter_cursor_overlap<'a>(
     ranges:      &'a [KakRange],
     cursor_line: usize,
@@ -322,8 +322,9 @@ pub fn filter_cursor_overlap<'a>(
 ) -> Cow<'a, [KakRange]> {
     // context=0 はフィルタなし（全 range を通す）
     if context == 0 { return Cow::Borrowed(ranges); }
-    let lo = cursor_line.saturating_sub(context);
-    let hi = cursor_line + context;
+    let radius = context - 1;
+    let lo = cursor_line.saturating_sub(radius);
+    let hi = cursor_line + radius;
     Cow::Owned(
         ranges.iter()
             .filter(|r| r.line_end < lo || r.line_start > hi)
