@@ -32,9 +32,11 @@ pub fn render(
     let ch = ctx.config.heading_char[idx];
 
     // `# ` (prefix_bytes バイト) をアイコン文字に置換（conceal）
-    // col_end は prefix の最後のバイトの列（包含的）
+    // 右端の # の位置にアイコンを配置し、左側を空白でインデント
+    // 例: `### ` (4セル) → `  󰲥 ` (2空白 + icon + 空白 = 4セル)
     let col_prefix_e = col_s + prefix_bytes - 1;
-    let replacement = format!("{} ", escape_markup(&ch.to_string()));
+    let indent = " ".repeat(level.saturating_sub(1));
+    let replacement = format!("{}{} ", indent, escape_markup(&ch.to_string()));
 
     conceal.push(KakRange {
         line_start: line_s,
