@@ -1,6 +1,9 @@
-source "%val{source_directory}/options.kak"
-source "%val{source_directory}/faces.kak"
-source "%val{source_directory}/commands.kak"
+evaluate-commands %sh{
+    dir=$(dirname "$kak_source")
+    printf 'source "%s/options.kak"\n' "$dir"
+    printf 'source "%s/faces.kak"\n' "$dir"
+    printf 'source "%s/commands.kak"\n' "$dir"
+}
 
 hook global WinSetOption filetype=markdown %{
     mkdr-enable
