@@ -1,4 +1,4 @@
-define-command mkdr-enable -docstring 'Enable markdown rendering' %{
+define-command -override mkdr-enable -docstring 'Enable markdown rendering' %{
     # try で囲む: WinSetOption が2回発火した場合に add-highlighter が
     # 「既に存在する」エラーで失敗しないようにする
     try %{ add-highlighter window/mkdr-conceal replace-ranges mkdr_conceal }
@@ -8,7 +8,7 @@ define-command mkdr-enable -docstring 'Enable markdown rendering' %{
     hook -group mkdr window WinResize   .* mkdr-on-resize
 }
 
-define-command mkdr-disable -docstring 'Disable markdown rendering' %{
+define-command -override mkdr-disable -docstring 'Disable markdown rendering' %{
     try %{ remove-highlighter window/mkdr-conceal }
     try %{ remove-highlighter window/mkdr-faces   }
     remove-hooks window mkdr

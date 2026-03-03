@@ -11,13 +11,13 @@ hook global WinSetOption filetype=markdown %{
 
 # 幅変化時は強制 RENDER（thematic/code fence が幅依存のため）
 # mkdr_last_timestamp も '' にリセットして ts_same=0 → RENDER パスを強制する。
-define-command -hidden mkdr-on-resize %{
+define-command -override -hidden mkdr-on-resize %{
     set-option window mkdr_last_width     ''
     set-option window mkdr_last_timestamp ''
     mkdr-render
 }
 
-define-command -hidden mkdr-render %{
+define-command -override -hidden mkdr-render %{
     evaluate-commands %sh{
         # ---- no-op 判定（常に必要な変数のみ参照・export）----
         # Kakoune は %sh{} 内で明示参照した変数のみを shell に export する。
