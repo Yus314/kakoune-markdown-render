@@ -1,4 +1,4 @@
-use crate::kak::{KakRange, escape_markup};
+use crate::kak::{KakRange, escape_markup, char_display_width};
 use crate::offset::byte_to_line_col;
 use super::RenderCtx;
 
@@ -31,12 +31,16 @@ pub fn render(
     let idx = (level - 1).min(5);
     let ch = ctx.config.heading_char[idx];
 
-    // `# ` (prefix_bytes バイト) をアイコン文字に置換（conceal）
-    // 右端の # の位置にアイコンを配置し、左側を空白でインデント
-    // 例: `### ` (4セル) → `  󰲥 ` (2空白 + icon + 空白 = 4セル)
+    // `# ` (prefix_bytes セル) をアイコン文字に置換（conceal）
+    // アイコンの実表示幅を考慮してインデントとスペースを計算
+    // 例 (2セル幅icon): `### ` (4セル) → ` 󰲥 ` (1空白 + icon(2) + 空白 = 4セル)
     let col_prefix_e = col_s + prefix_bytes - 1;
-    let indent = " ".repeat(level.saturating_sub(1));
-    let replacement = format!("{}{} ", indent, escape_markup(&ch.to_string()));
+    let icon_w = char_display_width(ch);
+    let trailing = if prefix_bytes > icon_w { 1 } else { 0 };
+    let indent_n = prefix_bytes.saturating_sub(icon_w + trailing);
+    let indent = " ".repeat(indent_n);
+    let trail  = " ".repeat(trailing);
+    let replacement = format!("{}{}{}", indent, escape_markup(&ch.to_string()), trail);
 
     conceal.push(KakRange {
         line_start: line_s,

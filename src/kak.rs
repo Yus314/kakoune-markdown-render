@@ -25,6 +25,28 @@ pub fn kakquote(s: &str) -> String {
     format!("'{}'", s.replace('\'', "''"))
 }
 
+/// 文字の端末表示幅を推定（PUA 文字は Nerd Font 前提で 2 セル）。
+pub fn char_display_width(c: char) -> usize {
+    let cp = c as u32;
+    match cp {
+        // ASCII printable
+        0x20..=0x7E => 1,
+        // Hangul Jamo
+        0x1100..=0x115F | 0x2329..=0x232A => 2,
+        // CJK misc, ideographs, compatibility
+        0x2E80..=0x303E | 0x3041..=0x33BF |
+        0x3400..=0x4DBF | 0x4E00..=0x9FFF | 0xA000..=0xA4CF |
+        0xAC00..=0xD7AF |
+        0xF900..=0xFAFF | 0xFE10..=0xFE19 | 0xFE30..=0xFE6F |
+        0xFF01..=0xFF60 | 0xFFE0..=0xFFE6 |
+        0x1F000..=0x1FFFD |
+        0x20000..=0x2FFFD | 0x30000..=0x3FFFD => 2,
+        // Private Use Areas (Nerd Font icons are typically 2 cells wide)
+        0xE000..=0xF8FF | 0xF0000..=0xFFFFD | 0x100000..=0x10FFFD => 2,
+        _ => 1,
+    }
+}
+
 pub fn escape_markup(s: &str) -> String {
     // replace-ranges の markup string では \ | { を全てエスケープ必須。
     // \ は他の置換のプレフィックスになるので最初に処理する。
@@ -126,5 +148,40 @@ mod tests {
     fn format_commands_config_hash_format() {
         let s = format_commands("c", "b", 42, 80, &[], &[], 0xdeadbeef12345678);
         assert!(s.contains("mkdr_last_config_hash '000000000000002a:deadbeef12345678'"));
+    }
+
+    #[test]
+    fn char_display_width_ascii() {
+        assert_eq!(char_display_width('A'), 1);
+        assert_eq!(char_display_width('#'), 1);
+        assert_eq!(char_display_width(' '), 1);
+    }
+
+    #[test]
+    fn char_display_width_box_drawing() {
+        assert_eq!(char_display_width('─'), 1);
+        assert_eq!(char_display_width('▌'), 1);
+        assert_eq!(char_display_width('•'), 1);
+    }
+
+    #[test]
+    fn char_display_width_cjk() {
+        assert_eq!(char_display_width('日'), 2);
+        assert_eq!(char_display_width('漢'), 2);
+    }
+
+    #[test]
+    fn char_display_width_nerd_font_pua() {
+        // Nerd Font nf-md-numeric_N_circle_outline (Supplementary PUA-A)
+        assert_eq!(char_display_width('\u{F0CA1}'), 2);
+        assert_eq!(char_display_width('\u{F0CA3}'), 2);
+        assert_eq!(char_display_width('\u{F0CAB}'), 2);
+    }
+
+    #[test]
+    fn char_display_width_bmp_pua() {
+        // BMP PUA range (Nerd Font icons)
+        assert_eq!(char_display_width('\u{E000}'), 2);
+        assert_eq!(char_display_width('\u{F000}'), 2);
     }
 }
