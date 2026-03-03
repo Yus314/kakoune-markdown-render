@@ -32,15 +32,14 @@ pub fn render(
     let ch = ctx.config.heading_char[idx];
 
     // `# ` (prefix_bytes セル) をアイコン文字に置換（conceal）
-    // アイコンの実表示幅を考慮してインデントとスペースを計算
+    // アイコンの実表示幅を考慮してインデントを計算。末尾スペースは常に付与
+    // （Kakoune が PUA 文字の幅を正しく認識しない場合のバッファ）
     // 例 (2セル幅icon): `### ` (4セル) → ` 󰲥 ` (1空白 + icon(2) + 空白 = 4セル)
     let col_prefix_e = col_s + prefix_bytes - 1;
     let icon_w = char_display_width(ch);
-    let trailing = if prefix_bytes > icon_w { 1 } else { 0 };
-    let indent_n = prefix_bytes.saturating_sub(icon_w + trailing);
+    let indent_n = prefix_bytes.saturating_sub(icon_w + 1);
     let indent = " ".repeat(indent_n);
-    let trail  = " ".repeat(trailing);
-    let replacement = format!("{}{}{}", indent, escape_markup(&ch.to_string()), trail);
+    let replacement = format!("{}{} ", indent, escape_markup(&ch.to_string()));
 
     conceal.push(KakRange {
         line_start: line_s,
