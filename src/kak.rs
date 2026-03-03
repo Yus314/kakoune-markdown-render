@@ -59,9 +59,6 @@ pub fn format_commands(
     format!(
         "try %{{\n\
          evaluate-commands -try-client {client} %{{\n\
-         evaluate-commands %sh{{\n\
-           [ \"$kak_bufname\" = {bufname} ] || echo 'fail buffer-mismatch'\n\
-         }}\n\
          set-option window mkdr_conceal {ts}{conceal_specs}\n\
          set-option window mkdr_faces   {ts}{faces_specs}\n\
          set-option window mkdr_last_timestamp {ts}\n\
@@ -70,7 +67,6 @@ pub fn format_commands(
          }}\n\
          }} catch %{{}}",
         client = kakquote(client),
-        bufname = kakquote(bufname),
         ts = timestamp,
         width = width,
         conceal_specs = conceal_specs,
@@ -117,7 +113,6 @@ mod tests {
         assert!(s.contains("set-option window mkdr_last_width 80"));
         assert!(s.contains("set-option window mkdr_last_config_hash"));
         assert!(s.contains("evaluate-commands -try-client 'client1'"));
-        assert!(s.contains("$kak_bufname\" = 'buf1'"));
     }
 
     #[test]
