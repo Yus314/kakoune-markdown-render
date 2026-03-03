@@ -25,7 +25,7 @@ pub fn kakquote(s: &str) -> String {
     format!("'{}'", s.replace('\'', "''"))
 }
 
-/// 文字の端末表示幅を推定（PUA 文字は Nerd Font 前提で 2 セル）。
+/// 文字の端末表示幅を推定（PUA 文字は Nerd Font Mono 前提で 1 セル）。
 pub fn char_display_width(c: char) -> usize {
     let cp = c as u32;
     match cp {
@@ -41,8 +41,6 @@ pub fn char_display_width(c: char) -> usize {
         0xFF01..=0xFF60 | 0xFFE0..=0xFFE6 |
         0x1F000..=0x1FFFD |
         0x20000..=0x2FFFD | 0x30000..=0x3FFFD => 2,
-        // Private Use Areas (Nerd Font icons are typically 2 cells wide)
-        0xE000..=0xF8FF | 0xF0000..=0xFFFFD | 0x100000..=0x10FFFD => 2,
         _ => 1,
     }
 }
@@ -173,15 +171,15 @@ mod tests {
     #[test]
     fn char_display_width_nerd_font_pua() {
         // Nerd Font nf-md-numeric_N_circle_outline (Supplementary PUA-A)
-        assert_eq!(char_display_width('\u{F0CA1}'), 2);
-        assert_eq!(char_display_width('\u{F0CA3}'), 2);
-        assert_eq!(char_display_width('\u{F0CAB}'), 2);
+        assert_eq!(char_display_width('\u{F0CA1}'), 1);
+        assert_eq!(char_display_width('\u{F0CA3}'), 1);
+        assert_eq!(char_display_width('\u{F0CAB}'), 1);
     }
 
     #[test]
     fn char_display_width_bmp_pua() {
         // BMP PUA range (Nerd Font icons)
-        assert_eq!(char_display_width('\u{E000}'), 2);
-        assert_eq!(char_display_width('\u{F000}'), 2);
+        assert_eq!(char_display_width('\u{E000}'), 1);
+        assert_eq!(char_display_width('\u{F000}'), 1);
     }
 }
