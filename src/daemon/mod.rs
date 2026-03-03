@@ -51,7 +51,7 @@ pub fn run_with_sink(session: &str, sink: impl EmitSink + 'static) -> anyhow::Re
             Err(e) => { eprintln!("accept error: {e}"); continue; }
         };
         match parse_message(BufReader::new(stream)) {
-            Ok(msg) => { tx.send(msg).ok(); }
+            Ok(msg) => { if tx.send(msg).is_err() { break; } }
             // UnexpectedEof = --check-alive 接続（ヘッダを書かずに即クローズ）: 正常
             Err(ref e) if matches!(
                 e.downcast_ref::<io::Error>(),
@@ -88,6 +88,9 @@ fn render_loop(rx: Receiver<Message>, mut state: SessionState, mut sink: impl Em
             }
         }
 
+        // バイナリ置換検知: 今回のリクエストは処理してから終了
+        let should_exit = binary_replaced();
+
         // バッファごとに最新1件だけ処理
         for (_, msg) in pending.drain() {
             match msg {
@@ -96,7 +99,25 @@ fn render_loop(rx: Receiver<Message>, mut state: SessionState, mut sink: impl Em
                 _                  => unreachable!("Close/Shutdown は上で処理済み"),
             }
         }
+
+        if should_exit {
+            eprintln!("mkdr: binary replaced, exiting for restart");
+            return;
+        }
     }
+}
+
+/// バイナリが置き換えられたかチェック（Linux: /proc/self/exe が "(deleted)" で終わる）
+#[cfg(target_os = "linux")]
+fn binary_replaced() -> bool {
+    std::fs::read_link("/proc/self/exe")
+        .map(|p| p.to_string_lossy().ends_with("(deleted)"))
+        .unwrap_or(false)
+}
+
+#[cfg(not(target_os = "linux"))]
+fn binary_replaced() -> bool {
+    false
 }
 
 /// PING と RENDER が競合する場合は RENDER を優先（キーは (bufname, width) タプル）。

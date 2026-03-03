@@ -8,6 +8,16 @@ define-command -override mkdr-enable -docstring 'Enable markdown rendering' %{
     hook -group mkdr window WinResize   .* mkdr-on-resize
 }
 
+define-command -override mkdr-restart -docstring 'Restart mkdr daemon (use after binary rebuild)' %{
+    evaluate-commands %sh{
+        mkdr send --shutdown --session "$kak_session" 2>/dev/null
+    }
+    set-option window mkdr_daemon_alive false
+    set-option window mkdr_last_timestamp ''
+    set-option window mkdr_last_config_hash ''
+    mkdr-render
+}
+
 define-command -override mkdr-disable -docstring 'Disable markdown rendering' %{
     try %{ remove-highlighter window/mkdr-conceal }
     try %{ remove-highlighter window/mkdr-faces   }
