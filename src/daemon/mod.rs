@@ -110,6 +110,21 @@ fn merge_message(map: &mut HashMap<(String, usize), Message>, msg: Message) {
 }
 
 fn handle_render(msg: RenderMsg, state: &mut SessionState, sink: &mut dyn EmitSink) {
+    // デバッグダンプ: MKDR_DEBUG_DIR が設定されている場合、受信内容をファイルに書き出す
+    if let Ok(dir) = std::env::var("MKDR_DEBUG_DIR") {
+        let _ = std::fs::create_dir_all(&dir);
+        let path = std::path::Path::new(&dir).join("content.bin");
+        let _ = std::fs::write(&path, &msg.content);
+        let config_path = std::path::Path::new(&dir).join("config.bin");
+        let _ = std::fs::write(&config_path, &msg.config);
+        let meta_path = std::path::Path::new(&dir).join("meta.txt");
+        let _ = std::fs::write(&meta_path, format!(
+            "session={}\nbufname={}\ntimestamp={}\ncursor={}\nwidth={}\nclient={}\ncontent_len={}\nconfig_len={}\n",
+            msg.session, msg.bufname, msg.timestamp, msg.cursor, msg.width, msg.client,
+            msg.content.len(), msg.config.len(),
+        ));
+    }
+
     let config      = Config::from_bytes(&msg.config).unwrap_or_default();
     let config_hash = fnv1a(&msg.config);
 
