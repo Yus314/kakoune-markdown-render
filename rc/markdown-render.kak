@@ -120,10 +120,10 @@ define-command -override -hidden mkdr-render %{
 }
 
 # 設定変更時: キャッシュをリセットして次回 RENDER を強制
-# WinSetOption を使うことで window スコープの変更も検知する。
-# 内部状態オプション (mkdr_last_*, mkdr_daemon_*, mkdr_conceal, mkdr_faces) を
-# 負の先読みで除外し、自己再帰を防止する。
-hook global WinSetOption mkdr_(?!last_|daemon_|conceal|faces).*=.* %{
+# WinSetOption を使い window スコープの変更も検知する。
+# 内部状態オプション (mkdr_last_*, mkdr_daemon_*, mkdr_conceal, mkdr_faces) に
+# マッチしないよう、ユーザー向けオプションのプレフィックスを明示列挙する。
+hook global WinSetOption mkdr_(heading|thematic|blockquote|bullet|task|code_fence|enable|preset|cursor).*=.* %{
     set-option window mkdr_last_timestamp    ''
     set-option window mkdr_last_width        ''
     set-option window mkdr_last_config_hash  ''
