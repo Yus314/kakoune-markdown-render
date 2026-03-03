@@ -53,7 +53,7 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             cursor_context:  1,
-            heading_char:    ['▌'; 6],
+            heading_char:    ['\u{F0CA1}', '\u{F0CA3}', '\u{F0CA5}', '\u{F0CA7}', '\u{F0CA9}', '\u{F0CAB}'],
             heading_setext:  false,
             thematic_char:   '─',
             blockquote_char: '▎',

@@ -16,12 +16,12 @@ declare-option -hidden str  mkdr_last_config_hash ''
 
 # 設定オプション（buffer スコープ、21個）
 declare-option -hidden int  mkdr_cursor_context  1
-declare-option -hidden str  mkdr_heading_char_1  '▌'
-declare-option -hidden str  mkdr_heading_char_2  '▌'
-declare-option -hidden str  mkdr_heading_char_3  '▌'
-declare-option -hidden str  mkdr_heading_char_4  '▌'
-declare-option -hidden str  mkdr_heading_char_5  '▌'
-declare-option -hidden str  mkdr_heading_char_6  '▌'
+declare-option -hidden str  mkdr_heading_char_1  '󰲡'
+declare-option -hidden str  mkdr_heading_char_2  '󰲣'
+declare-option -hidden str  mkdr_heading_char_3  '󰲥'
+declare-option -hidden str  mkdr_heading_char_4  '󰲧'
+declare-option -hidden str  mkdr_heading_char_5  '󰲩'
+declare-option -hidden str  mkdr_heading_char_6  '󰲫'
 declare-option -hidden bool mkdr_heading_setext  false
 declare-option -hidden str  mkdr_thematic_char   '─'
 declare-option -hidden str  mkdr_blockquote_char '▎'

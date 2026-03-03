@@ -589,7 +589,7 @@ M0 (プロジェクト初期化)
 | `mkdr_last_config_hash` | **window** | str | `` | `"{ts_hex}:{hash_hex}"` 複合値。世代チェック（fire-and-forget 競合防止）+ config 変更検出の両用 |
 | `mkdr_cursor_context` | buffer | int | `0` | カーソル周辺の非レンダリング行数 |
 | `mkdr_preset` | buffer | str | `default` | プリセット名 |
-| `mkdr_heading_char_1..6` | buffer | str | `▌` | H1-H6プレフィックス文字 |
+| `mkdr_heading_char_1..6` | buffer | str | `󰲡`〜`󰲫` | H1-H6プレフィックス文字（Nerd Font nf-md-numeric_N_circle_outline） |
 | `mkdr_heading_setext` | buffer | bool | `false` | setext形式見出しの有効化 |
 | `mkdr_thematic_char` | buffer | str | `─` | テーマ区切り文字 |
 | `mkdr_blockquote_char` | buffer | str | `▎` | 引用マーカー文字 |

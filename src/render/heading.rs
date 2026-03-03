@@ -31,7 +31,7 @@ pub fn render(
     let idx = (level - 1).min(5);
     let ch = ctx.config.heading_char[idx];
 
-    // `# ` (prefix_bytes バイト) を `▌ ` に置換（conceal）
+    // `# ` (prefix_bytes バイト) をアイコン文字に置換（conceal）
     // col_end は prefix の最後のバイトの列（包含的）
     let col_prefix_e = col_s + prefix_bytes - 1;
     let replacement = format!("{} ", escape_markup(&ch.to_string()));
