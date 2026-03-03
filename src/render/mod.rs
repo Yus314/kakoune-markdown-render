@@ -207,6 +207,75 @@ mod tests {
     }
 
     #[test]
+    fn indented_code_block_closing() {
+        // 2スペースインデントされたコードブロック
+        let content = "  ```python\n  print(\"hello\")\n  ```\n";
+        let opts = Options::ENABLE_TABLES
+            | Options::ENABLE_TASKLISTS
+            | Options::ENABLE_STRIKETHROUGH;
+        let events: Vec<_> = Parser::new_ext(content, opts)
+            .into_offset_iter()
+            .collect();
+        let mut report = String::new();
+        for (ev, range) in &events {
+            report.push_str(&format!("{:?} range={:?} src={:?}\n", ev, range, &content[range.clone()]));
+        }
+        // Code block should close, not extend to EOF
+        let code_starts: Vec<_> = events.iter()
+            .filter(|(ev, _)| matches!(ev, Event::Start(Tag::CodeBlock(_))))
+            .collect();
+        assert_eq!(code_starts.len(), 1, "expected 1 code block, events:\n{}", report);
+        let (_, range) = &code_starts[0];
+        // Range should NOT extend to the end of the content
+        assert!(range.end <= content.len(),
+            "code block range {:?} should be within content (len={}), events:\n{}",
+            range, content.len(), report);
+    }
+
+    #[test]
+    fn indented_content_like_user_file() {
+        // ユーザファイルと同じ構造: 2スペースインデント
+        let content = "\
+  # Heading 1
+
+  ## Heading 2
+
+  ---
+
+  > Quote
+
+  - Item A
+
+  ```python
+  print(\"hello\")
+  ```
+
+  ~~strike~~
+
+  ---
+";
+        let opts = Options::ENABLE_TABLES
+            | Options::ENABLE_TASKLISTS
+            | Options::ENABLE_STRIKETHROUGH;
+        let events: Vec<_> = Parser::new_ext(content, opts)
+            .into_offset_iter()
+            .collect();
+        let mut report = String::new();
+        for (ev, range) in &events {
+            report.push_str(&format!("{:?} range={:?} src={:?}\n", ev, range, &content[range.clone()]));
+        }
+        // Strikethrough should be present
+        let has_strike = events.iter()
+            .any(|(ev, _)| matches!(ev, Event::Start(Tag::Strikethrough)));
+        // Last Rule should be present (2nd thematic break)
+        let rule_count = events.iter()
+            .filter(|(ev, _)| matches!(ev, Event::Rule))
+            .count();
+        assert!(has_strike, "expected Strikethrough event, events:\n{}", report);
+        assert_eq!(rule_count, 2, "expected 2 Rule events, events:\n{}", report);
+    }
+
+    #[test]
     fn render_full_test_doc() {
         let content = "\
 # Heading 1
