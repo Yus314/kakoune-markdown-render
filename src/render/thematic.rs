@@ -13,10 +13,12 @@ pub fn render(
     let (line_e, col_e) = byte_to_line_col(ctx.starts, range.end.saturating_sub(1));
 
     // window_width 分のテーマ区切り文字で置換（conceal）
+    // {MkdrThematicBreak} マークアップで明示的な色を適用
     let ch = ctx.config.thematic_char;
-    let replacement: String = std::iter::repeat(escape_markup(&ch.to_string()))
+    let border_chars: String = std::iter::repeat(escape_markup(&ch.to_string()))
         .take(ctx.window_width)
         .collect();
+    let replacement = format!("{{MkdrThematicBreak}}{border_chars}");
 
     conceal.push(KakRange {
         line_start: line_s,

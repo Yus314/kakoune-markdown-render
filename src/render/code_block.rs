@@ -25,10 +25,13 @@ pub fn render(
     let (open_line, open_col) = byte_to_line_col(ctx.starts, range.start);
 
     // 開始フェンス行全体を border 文字に置換
+    // {MkdrCodeFence} マークアップで明示的な色を適用し、
+    // markdown.kak のシンタックスハイライトを上書きする
     let ch = ctx.config.code_fence_char;
-    let border: String = std::iter::repeat(escape_markup(&ch.to_string()))
+    let border_chars: String = std::iter::repeat(escape_markup(&ch.to_string()))
         .take(ctx.window_width)
         .collect();
+    let border = format!("{{MkdrCodeFence}}{border_chars}");
 
     let open_end_offset = range.start + open_line_end.saturating_sub(1);
     let (_, open_col_e) = byte_to_line_col(ctx.starts, open_end_offset.max(range.start));
