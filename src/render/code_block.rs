@@ -30,7 +30,7 @@ pub fn render(
     let border_chars: String = std::iter::repeat(escape_markup(&ch.to_string()))
         .take(ctx.window_width)
         .collect();
-    let border = format!("{{MkdrCodeBlock}}{border_chars}{{/}}");
+    let border = format!("{{MkdrCodeBlock}}{border_chars}");
 
     let open_end_offset = range.start + open_line_end.saturating_sub(1);
     let (_, open_col_e) = byte_to_line_col(ctx.starts, open_end_offset.max(range.start));
