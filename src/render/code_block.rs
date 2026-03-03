@@ -56,6 +56,17 @@ pub fn render(
         text:       "MkdrCodeBlock".to_string(),
     });
 
+    // 開始フェンスに MkdrCodeFence フェイス適用
+    // ranges ハイライターで明示的に適用することで、replace-ranges の
+    // インラインマークアップと markdown.kak の fill meta を確実に上書きする
+    faces.push(KakRange {
+        line_start: open_line,
+        col_start:  open_col,
+        line_end:   open_line,
+        col_end:    open_col_e,
+        text:       "MkdrCodeFence".to_string(),
+    });
+
     // 言語ラベルがある場合: MkdrCodeLang フェイス適用
     if !lang.is_empty() {
         let lang_start = range.start + fence_len;
@@ -97,6 +108,15 @@ pub fn render(
             line_end:   cl_e,
             col_end:    cc_e,
             text:       border,
+        });
+
+        // 閉じフェンスに MkdrCodeFence フェイス適用
+        faces.push(KakRange {
+            line_start: cl_s,
+            col_start:  cc_s,
+            line_end:   cl_e,
+            col_end:    cc_e,
+            text:       "MkdrCodeFence".to_string(),
         });
     }
 }
